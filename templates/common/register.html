@@ -1,0 +1,38 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container-inline">
+        <section id="welcomePage">
+            <div id="welcome-message">
+                <h1>Welcome to</h1>
+                <h1>My Music App!</h1>
+            </div>
+            <div class="music-img">
+                <img src="{% static 'images/musicIcons.webp' %}" alt="music-icon">
+            </div>
+        </section>
+
+        <!-- Registration -->
+        <section id="registerPage">
+            <form method="post" action="{% url 'register profile' %}">
+                <fieldset>
+                    <legend>Profile</legend>
+                    {% csrf_token %}
+                    <label for="{{ form.username.id_for_label }}">Username:</label>
+                    {{ form.username }}
+
+                    <label for="{{ form.email.id_for_label }}">Email:</label>
+                    {{ form.email }}
+
+                    <label for="{{ form.password1.id_for_label }}">Password:</label>
+                    {{ form.password1 }}
+
+                    <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                    {{ form.password2 }}
+                    <button type="submit" class="register">Register</button>
+                </fieldset>
+            </form>
+        </section>
+    </div>
+{% endblock %}

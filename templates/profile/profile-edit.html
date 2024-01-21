@@ -1,0 +1,16 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    <section class="editPage">
+        <form method="post" action="{% url 'edit profile' %}" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Edit Profile</legend>
+                <div class="container">
+                    {% csrf_token %}
+                    {{ form }}
+                    <button class="edit-album" type="submit">Edit Profile</button>
+                </div>
+            </fieldset>
+        </form>
+    </section>
+{% endblock %}

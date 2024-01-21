@@ -1,0 +1,17 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="catalogPage">
+
+        {% if not object_list %}
+            <p>No Albums in Catalog!</p>
+        {% else %}
+            <h1>All Albums</h1>
+            {% for album in object_list %}
+                {% include 'common/partials/album_item.html' with album=album %}
+            {% endfor %}
+        {% endif %}
+
+    </section>
+{% endblock %}
