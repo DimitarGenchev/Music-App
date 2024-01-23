@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import forms as auth_forms, get_user_model
 
-from ExamPrepDjango.musicapp.models import Profile, Album
+from ExamPrepDjango.musicapp.models import Profile, Album, Song
 
 UserModel = get_user_model()
 
@@ -159,3 +159,23 @@ class LoginForm(auth_forms.AuthenticationForm):
             }
         ),
     )
+
+
+class SongBaseForm(forms.ModelForm):
+    class Meta:
+        model = Song
+        exclude = ['music_file']
+
+
+class SongDeleteForm(SongBaseForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['album'].widget = forms.TextInput(
+            attrs={
+                'id': 'genre',
+            }
+        )
+
+        for (_, field) in self.fields.items():
+            field.widget.attrs['readonly'] = 'readonly'

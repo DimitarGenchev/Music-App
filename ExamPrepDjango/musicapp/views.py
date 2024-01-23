@@ -7,8 +7,8 @@ from django.urls import reverse_lazy
 from django.views import generic as views
 
 from ExamPrepDjango.musicapp.forms import ProfileCreateForm, AlbumCreateForm, AlbumEditForm, AlbumDeleteForm, \
-    ProfileDeleteForm, LoginForm
-from ExamPrepDjango.musicapp.models import Album
+    ProfileDeleteForm, LoginForm, SongDeleteForm
+from ExamPrepDjango.musicapp.models import Album, Song
 
 UserModel = get_user_model()
 
@@ -131,7 +131,7 @@ class UserDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
         form_kwargs = super().get_form_kwargs()
 
         form_kwargs.update(instance=instance)
-        
+
         return form_kwargs
 
 
@@ -151,3 +151,40 @@ class UserEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class SongCreateView(auth_mixins.LoginRequiredMixin, views.CreateView):
+    model = Song
+    template_name = 'song/add-song.html'
+    fields = ['title', 'album', 'music_file']
+    success_url = reverse_lazy('index')
+
+
+class AlbumSongsDisplayView(auth_mixins.LoginRequiredMixin, views.ListView):
+    template_name = 'album/album-songs.html'
+
+    def get_queryset(self):
+        album_id = self.kwargs.get('id')
+
+        return Song.objects.filter(album_id=album_id)
+
+
+class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
+    model = Song
+    form_class = SongDeleteForm
+    pk_url_kwarg = 'id'
+    template_name = 'song/delete-song.html'
+
+    def get_form_kwargs(self):
+        instance = self.get_object()
+        form_kwargs = super().get_form_kwargs()
+
+        form_kwargs.update(instance=instance)
+
+        return form_kwargs
+
+    def get_success_url(self):
+        album_id = self.object.album.id
+
+        return reverse_lazy('album songs', kwargs={'id': album_id})
+

@@ -1,5 +1,5 @@
 from django.contrib.auth import models as auth_models, get_user_model
-from django.core.validators import MinLengthValidator, RegexValidator, MinValueValidator
+from django.core.validators import MinLengthValidator, RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
@@ -21,6 +21,10 @@ class Profile(auth_models.AbstractUser):
     )
 
     age = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(18),
+            MaxValueValidator(100),
+        ],
         null=True,
         blank=True,
     )
@@ -79,6 +83,9 @@ class Album(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self):
+        return self.album_name
+
     class Meta:
         constraints = [
             UniqueConstraint(
@@ -86,5 +93,24 @@ class Album(models.Model):
                 name='unique_album_name_per_user'
             )
         ]
+
+
+class Song(models.Model):
+    title = models.CharField(
+        max_length=30,
+    )
+
+    music_file = models.FileField(
+        upload_to='songs/',
+    )
+
+    album = models.ForeignKey(
+        Album,
+        on_delete=models.CASCADE,
+    )
+
+
+
+
 
 

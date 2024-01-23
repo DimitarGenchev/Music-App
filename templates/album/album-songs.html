@@ -1,0 +1,14 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    <section id="catalogPage">
+        {% if not object_list %}
+            <p>This album does not have any songs yet!</p>
+        {% else %}
+            <h1>All songs</h1>
+            {% for song in object_list %}
+                {% include 'common/partials/song_item.html' with song=song %}
+            {% endfor %}
+        {% endif %}
+    </section>
+{% endblock %}

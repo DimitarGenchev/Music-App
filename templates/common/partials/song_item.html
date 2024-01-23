@@ -1,0 +1,16 @@
+<div class="card-box">
+    <img src="{{ song.album.image_url }}" alt="Cover Image">
+    <div>
+        <div class="text-center">
+            <p class="name">Title: {{ song.title }}</p>
+            <p class="artist">Album: {{ song.album.album_name }}</p>
+            <p class="artist">Artist: {{ song.album.artist }}</p>
+            <p class="genre">Genre: {{ song.album.genre }}</p>
+        </div>
+        <div class="btn-group">
+            <a href="#">Play</a>
+            <a href="#">Edit</a>
+            <a href="{% url 'delete song' song.id %}">Delete</a>
+        </div>
+    </div>
+</div>

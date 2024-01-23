@@ -6,6 +6,7 @@
     <ul></ul>
     <ul>
         {% if request.user.is_authenticated %}
+            <li><a href="{% url 'add song' %}">Create Song</a></li>
             <li><a href="{% url 'add album' %}">Create Album</a></li>
             <li><a href="{% url 'details profile' %}">{{ request.user.username }}</a></li>
             <li><a href="#" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
