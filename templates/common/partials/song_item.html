@@ -3,13 +3,14 @@
     <div>
         <div class="text-center">
             <p class="name">Title: {{ song.title }}</p>
-            <p class="artist">Album: {{ song.album.album_name }}</p>
+            <p class="genre">Album: {{ song.album.album_name }}</p>
             <p class="artist">Artist: {{ song.album.artist }}</p>
-            <p class="genre">Genre: {{ song.album.genre }}</p>
+            <p class="genre"></p>
+            <p class="genre"></p>
         </div>
         <div class="btn-group">
-            <a href="#">Play</a>
-            <a href="#">Edit</a>
+            <a href="{% url 'play song' song.id %}">Play</a>
+            <a href="{% url 'edit song' song.id %}">Edit</a>
             <a href="{% url 'delete song' song.id %}">Delete</a>
         </div>
     </div>

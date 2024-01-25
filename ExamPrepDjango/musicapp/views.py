@@ -1,8 +1,11 @@
+import os
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import mixins as auth_mixins
-from django.http import Http404
-from django.shortcuts import render, redirect
+from django.http import Http404, HttpResponse, FileResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic as views
 
@@ -187,4 +190,22 @@ class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
         album_id = self.object.album.id
 
         return reverse_lazy('album songs', kwargs={'id': album_id})
+
+
+class SongEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
+    model = Song
+    fields = ['title', 'album']
+    template_name = 'song/edit-song.html'
+    pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        album_id = self.object.album.id
+
+        return reverse_lazy('album songs', kwargs={'id': album_id})
+
+
+class SongPlayView(views.DetailView):
+    model = Song
+    pk_url_kwarg = 'id'
+    template_name = 'song/play-song.html'
 

@@ -24,7 +24,8 @@ urlpatterns = [
     ])),
     path('song/', include([
         path('add/', views.SongCreateView.as_view(), name='add song'),
-        # path('edit/<int:id>/', views.SongEditView.as_view(), name='edit song'),
+        path('edit/<int:id>/', views.SongEditView.as_view(), name='edit song'),
         path('delete/<int:id>/', views.SongDeleteView.as_view(), name='delete song'),
+        path('play/<int:id>/', views.SongPlayView.as_view(), name='play song'),
     ])),
 ]
