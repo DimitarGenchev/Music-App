@@ -175,8 +175,12 @@ class AlbumSongsDisplayView(auth_mixins.LoginRequiredMixin, views.ListView):
 
     def get_queryset(self):
         album_id = self.kwargs.get('id')
+        album = Album.objects.get(id=album_id)
 
-        return Song.objects.filter(album_id=album_id)
+        if album.user != self.request.user:
+            raise Http404("You do not have permission to view this page.")
+
+        return Song.objects.filter(album=album)
 
 
 class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
@@ -184,6 +188,14 @@ class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
     form_class = SongDeleteForm
     pk_url_kwarg = 'id'
     template_name = 'song/delete-song.html'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if obj.album.user != self.request.user:
+            raise Http404("You do not have permission to view this page.")
+
+        return obj
 
     def get_form_kwargs(self):
         instance = self.get_object()
@@ -205,6 +217,14 @@ class SongEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
     template_name = 'song/edit-song.html'
     pk_url_kwarg = 'id'
 
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if obj.album.user != self.request.user:
+            raise Http404("You do not have permission to view this page.")
+
+        return obj
+
     def get_success_url(self):
         album_id = self.object.album.id
 
@@ -215,6 +235,14 @@ class SongPlayView(auth_mixins.LoginRequiredMixin, views.DetailView):
     model = Song
     pk_url_kwarg = 'id'
     template_name = 'song/play-song.html'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if obj.album.user != self.request.user:
+            raise Http404("You do not have permission to view this page.")
+
+        return obj
 
 
 class SongNextView(auth_mixins.LoginRequiredMixin, views.RedirectView):
