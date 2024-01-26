@@ -162,6 +162,13 @@ class SongCreateView(auth_mixins.LoginRequiredMixin, views.CreateView):
     fields = ['title', 'album', 'music_file']
     success_url = reverse_lazy('index')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        form.fields['album'].queryset = Album.objects.filter(user=self.request.user)
+
+        return form
+
 
 class AlbumSongsDisplayView(auth_mixins.LoginRequiredMixin, views.ListView):
     template_name = 'album/album-songs.html'
@@ -194,7 +201,7 @@ class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
 
 class SongEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
     model = Song
-    fields = ['title', 'album']
+    fields = ['title']
     template_name = 'song/edit-song.html'
     pk_url_kwarg = 'id'
 
@@ -204,8 +211,35 @@ class SongEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
         return reverse_lazy('album songs', kwargs={'id': album_id})
 
 
-class SongPlayView(views.DetailView):
+class SongPlayView(auth_mixins.LoginRequiredMixin, views.DetailView):
     model = Song
     pk_url_kwarg = 'id'
     template_name = 'song/play-song.html'
 
+
+class SongNextView(auth_mixins.LoginRequiredMixin, views.RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        current_id = self.kwargs.get('id')
+        current_song = Song.objects.filter(id=current_id).get()
+        next_song = Song.objects.filter(id__gt=current_id, album=current_song.album)
+
+        if next_song:
+            redirect_id = next_song.get().pk
+        else:
+            redirect_id = current_id
+
+        return reverse_lazy('play song', kwargs={'id': redirect_id})
+
+
+class SongPreviousView(auth_mixins.LoginRequiredMixin, views.RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        current_id = self.kwargs.get('id')
+        current_song = Song.objects.filter(id=current_id).get()
+        previous_song = Song.objects.filter(id__lt=current_id, album=current_song.album)
+
+        if previous_song:
+            redirect_id = previous_song.get().pk
+        else:
+            redirect_id = current_id
+
+        return reverse_lazy('play song', kwargs={'id': redirect_id})

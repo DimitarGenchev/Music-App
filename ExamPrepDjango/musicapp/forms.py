@@ -164,18 +164,25 @@ class LoginForm(auth_forms.AuthenticationForm):
 class SongBaseForm(forms.ModelForm):
     class Meta:
         model = Song
-        exclude = ['music_file']
+        exclude = ['music_file', 'album']
 
 
 class SongDeleteForm(SongBaseForm):
+    album_name = forms.CharField(
+        max_length=30,
+        label="Album",
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['album'].widget = forms.TextInput(
+        self.fields['album_name'].widget = forms.TextInput(
             attrs={
-                'id': 'genre',
+                'id': 'album',
+                'value': self.instance.album.album_name,
             }
         )
 
         for (_, field) in self.fields.items():
             field.widget.attrs['readonly'] = 'readonly'
+
