@@ -12,6 +12,7 @@ from django.views import generic as views
 from ExamPrepDjango.musicapp.forms import ProfileCreateForm, AlbumCreateForm, AlbumEditForm, AlbumDeleteForm, \
     ProfileDeleteForm, LoginForm, SongDeleteForm
 from ExamPrepDjango.musicapp.models import Album, Song
+from ExamPrepDjango.musicapp.utils import check_if_object_belongs_to_user
 
 UserModel = get_user_model()
 
@@ -54,16 +55,10 @@ class AlbumDetailsView(auth_mixins.LoginRequiredMixin, views.DetailView):
     template_name = 'album/album-details.html'
     pk_url_kwarg = 'id'
 
-    def get_queryset(self):
-        return Album.objects.filter(user=self.request.user)
-
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.user != self.request.user:
-            raise Http404("You do not have permission to view this album.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
 
 class AlbumEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
@@ -73,16 +68,18 @@ class AlbumEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
     success_url = reverse_lazy('index')
     pk_url_kwarg = 'id'
 
-    def get_queryset(self):
-        return Album.objects.filter(user=self.request.user)
+    def get_form_kwargs(self):
+        instance = self.get_object()
+        form_kwargs = super().get_form_kwargs()
+
+        form_kwargs.update(instance=instance)
+
+        return form_kwargs
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.user != self.request.user:
-            raise Http404("You do not have permission to edit this album.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
 
 class AlbumDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
@@ -100,16 +97,10 @@ class AlbumDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
 
         return form_kwargs
 
-    def get_queryset(self):
-        return Album.objects.filter(user=self.request.user)
-
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.user != self.request.user:
-            raise Http404("You do not have permission to delete this album.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
 
 class UserDetailsView(auth_mixins.LoginRequiredMixin, views.DetailView):
@@ -177,8 +168,7 @@ class AlbumSongsDisplayView(auth_mixins.LoginRequiredMixin, views.ListView):
         album_id = self.kwargs.get('id')
         album = Album.objects.get(id=album_id)
 
-        if album.user != self.request.user:
-            raise Http404("You do not have permission to view this page.")
+        check_if_object_belongs_to_user(album, self.request.user)
 
         return Song.objects.filter(album=album)
 
@@ -192,10 +182,7 @@ class SongDeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.album.user != self.request.user:
-            raise Http404("You do not have permission to view this page.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
     def get_form_kwargs(self):
         instance = self.get_object()
@@ -220,10 +207,7 @@ class SongEditView(auth_mixins.LoginRequiredMixin, views.UpdateView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.album.user != self.request.user:
-            raise Http404("You do not have permission to view this page.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
     def get_success_url(self):
         album_id = self.object.album.id
@@ -239,10 +223,7 @@ class SongPlayView(auth_mixins.LoginRequiredMixin, views.DetailView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if obj.album.user != self.request.user:
-            raise Http404("You do not have permission to view this page.")
-
-        return obj
+        return check_if_object_belongs_to_user(obj, self.request.user)
 
 
 class SongNextView(auth_mixins.LoginRequiredMixin, views.RedirectView):
