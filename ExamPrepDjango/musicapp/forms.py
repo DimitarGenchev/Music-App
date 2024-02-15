@@ -33,6 +33,12 @@ class ProfileBaseForm(forms.ModelForm):
 
 
 class ProfileCreateForm(auth_forms.UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['password1'].widget.attrs['placeholder'] = 'Enter password'
+        self.fields['password2'].widget.attrs['placeholder'] = 'Confirm password'
+
     class Meta(auth_forms.UserCreationForm.Meta):
         model = UserModel
         fields = ['username', 'email', 'password1', 'password2']
@@ -159,6 +165,12 @@ class LoginForm(auth_forms.AuthenticationForm):
             }
         ),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].label = 'Username:'
+        self.fields['password'].label = 'Password:'
 
 
 class SongBaseForm(forms.ModelForm):

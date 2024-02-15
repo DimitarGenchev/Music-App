@@ -19,7 +19,10 @@
             <fieldset>
                 <legend>Profile</legend>
                 {% csrf_token %}
+                <label for="{{ form.username.id }}">{{ form.username.label }}</label>
                 {{ form.username }}
+
+                <label for="{{ form.password.id }}">{{ form.password.label }}</label>
                 {{ form.password }}
                 <button type="submit" class="register">Login</button>
             </fieldset>
